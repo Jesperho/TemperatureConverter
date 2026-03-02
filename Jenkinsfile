@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    tools {
+        maven 'Maven'
+    }
+
     environment {
         DOCKER_IMAGE = 'temperature-converter'
         DOCKERHUB_USER = 'your-dockerhub-username'  // Replace with your Docker Hub username
