@@ -7,7 +7,6 @@ pipeline {
 
     environment {
         DOCKER_IMAGE = 'temperature-converter'
-        DOCKERHUB_USER = 'your-dockerhub-username'  // Replace with your Docker Hub username
     }
 
     stages {
@@ -20,7 +19,7 @@ pipeline {
 
         stage('Build & Test') {
             steps {
-                sh 'mvn clean test'
+                bat 'mvn clean test'
             }
             post {
                 always {
@@ -42,33 +41,11 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                sh "docker build -t ${DOCKER_IMAGE}:${BUILD_NUMBER} ."
-                sh "docker tag ${DOCKER_IMAGE}:${BUILD_NUMBER} ${DOCKER_IMAGE}:latest"
+                bat "docker build -t ${DOCKER_IMAGE}:${BUILD_NUMBER} ."
+                bat "docker tag ${DOCKER_IMAGE}:${BUILD_NUMBER} ${DOCKER_IMAGE}:latest"
             }
         }
 
-        // Optional: uncomment this stage to push to Docker Hub
-        // Requires a Jenkins credential with ID 'dockerhub-credentials'
-        /*
-        stage('Push to Docker Hub') {
-            when {
-                branch 'main'
-            }
-            steps {
-                withCredentials([usernamePassword(
-                    credentialsId: 'dockerhub-credentials',
-                    usernameVariable: 'DOCKER_USER',
-                    passwordVariable: 'DOCKER_PASS'
-                )]) {
-                    sh "docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}"
-                    sh "docker tag ${DOCKER_IMAGE}:${BUILD_NUMBER} ${DOCKER_USER}/${DOCKER_IMAGE}:${BUILD_NUMBER}"
-                    sh "docker tag ${DOCKER_IMAGE}:${BUILD_NUMBER} ${DOCKER_USER}/${DOCKER_IMAGE}:latest"
-                    sh "docker push ${DOCKER_USER}/${DOCKER_IMAGE}:${BUILD_NUMBER}"
-                    sh "docker push ${DOCKER_USER}/${DOCKER_IMAGE}:latest"
-                }
-            }
-        }
-        */
     }
 
     post {
